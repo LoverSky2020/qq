@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <option name="USE_RELEASE_OPTION" value="false" />
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="emall-web-webui" />
+        <module name="emall-web-utils" />
+        <module name="emall-web-entity" />
+        <module name="emall-web-component" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="11">
+      <module name="emall-utils" target="1.11" />
+      <module name="emall_web_utils" target="1.11" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+
+    <!--扫描组件-->
+    <context:component-scan base-package="com.tty.emall.controller" />
+    <context:component-scan base-package="com.tty.emall.config" />
+
+    <!--配置视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/" />
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!--配置文件上传解析器-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!--最大10mb-->
+        <property name="maxUploadSize" value="10485760" />
+        <!--utf-8编码-->
+        <property name="defaultEncoding" value="utf-8" />
+        <property name="maxInMemorySize" value="10485760" />
+    </bean>
+
+    <mvc:default-servlet-handler/>
+    <mvc:annotation-driven />
+
+
+    <mvc:view-controller path="/index/index/page" view-name="/index/index" />
+    <mvc:view-controller path="/admin/index/page" view-name="/admin/index" />
+    <mvc:view-controller path="/admin/login/page" view-name="/admin/login" />
+    <mvc:view-controller path="/admin/type/list/page" view-name="/admin/type_list" />
+    <mvc:view-controller path="/admin/save/page" view-name="/admin/admin_add" />
+    <mvc:view-controller path="/admin/type/page" view-name="/admin/type_list" />
+    <mvc:view-controller path="/admin/user/save/page" view-name="/admin/user_add" />
+    <mvc:view-controller path="/admin/type/save/page" view-name="/admin/type_add" />
+    <mvc:view-controller path="/admin/reset/page" view-name="/admin/admin_reset" />
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/admin/login/page"/>
+            <mvc:exclude-mapping path="/admin/login"/>
+            <bean class="com.tty.emall.interceptor.LoginInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <prop key="java.lang.Exception">system-error</prop>
+                <prop key="com.tty.emall.expection.AccessForbiddenException">login-error</prop>
+            </props>
+        </property>
+    </bean>
+
+
+</beans>

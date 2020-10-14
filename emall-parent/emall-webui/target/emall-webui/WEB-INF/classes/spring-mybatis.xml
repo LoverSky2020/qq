@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!--加载配置文件-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <context:component-scan base-package="com.tty.emall.service" />
+
+    <!--配置数据源-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="username" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+        <property name="url" value="${jdbc.url}" />
+        <property name="driverClassName" value="${jdbc.driverClassName}" />
+    </bean>
+    
+    <!--配置mybatis的SqlSessionFactoryBean-->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--装配数据源-->
+        <property name="dataSource" ref="dataSource" />
+        <!--指定mybatis主配置文件的位置-->
+        <property name="configLocation" value="classpath:mybatis/mybatis-config.xml" />
+        <!--指定mapper.xml文件位置-->
+        <property name="mapperLocations" value="classpath:mybatis/mapper/*Mapper.xml" />
+    </bean>
+
+    <!--扫描mapper接口所在位置-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.tty.emall.mapper" />
+    </bean>
+
+
+    <!--配置事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <!--配置事务切面-->
+    <aop:config>
+        <aop:pointcut id="pointCut" expression="execution(* *..*ServiceImpl.*(..))"/>
+        <aop:advisor advice-ref="interceptor" pointcut-ref="pointCut" />
+    </aop:config>
+
+    <!--配置事务通知-->
+    <tx:advice id="interceptor">
+        <tx:attributes>
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="find*" read-only="true"/>
+            <tx:method name="query*" read-only="true"/>
+            <tx:method name="count*" read-only="true"/>
+
+            <!--
+                REQUIRES：当前方法必须要在事务中，如果当前线程没有事务，则自己开启一个事务，如果当前线程已经有了事务，则使用已经有了的事务
+                REQUIRES_NEW：不管当前线程有没有事务，自己都开启一个新事物（防止收到其它事务的影响）
+            -->
+            <tx:method name="save*" propagation="REQUIRES_NEW" rollback-for="java.lang.Exception"/>
+            <tx:method name="update*" propagation="REQUIRES_NEW" rollback-for="java.lang.Exception"/>
+            <tx:method name="remove*" propagation="REQUIRES_NEW" rollback-for="java.lang.Exception"/>
+            <tx:method name="ship*" propagation="REQUIRES_NEW" rollback-for="java.lang.Exception"/>
+            <tx:method name="join*" propagation="REQUIRES_NEW" rollback-for="java.lang.Exception"/>
+            <tx:method name="modify*" propagation="REQUIRES_NEW" rollback-for="java.lang.Exception"/>
+        </tx:attributes>
+    </tx:advice>
+
+</beans>
